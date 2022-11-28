@@ -16,8 +16,12 @@ library Compat {
         UnsupportedInterface
     }
 
-    function _supportsProfileV1(address _address) internal view returns (bool) {
+    function supportsProfileV1(address _address) internal view returns (bool) {
         return ERC165Checker.supportsInterface(_address, PROFILE_V1_INTERFACE_ID);
+    }
+
+    function supportsResolver(address _address) internal view returns (bool) {
+        return ERC165Checker.supportsInterface(_address, RESOLVER_INTERFACE_ID);
     }
 
     function tryGetLatestAddress(address _contractAddress) internal view returns (GetContractError, address) {
@@ -28,7 +32,7 @@ library Compat {
             if (newAddress == address(0)) {
                 break;
             } else {
-                if (!_supportsProfileV1(newAddress)) {
+                if (!supportsProfileV1(newAddress)) {
                     return (GetContractError.UnsupportedInterface, address(0));
                 }
                 if (!Signature.verifyContract(IProfileV1(newAddress))) {

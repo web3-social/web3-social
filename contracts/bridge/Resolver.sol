@@ -12,7 +12,7 @@ contract Resolver is IResolver, ERC165 {
     mapping(address => address) _records;
 
     modifier onlyFromProfile() {
-        require(Compat._supportsProfileV1(msg.sender));
+        require(Compat.supportsProfileV1(msg.sender));
         _;
     }
 
@@ -40,7 +40,7 @@ contract Resolver is IResolver, ERC165 {
     }
 
     function _verifyAll(address latestAddress) private view returns (address profileAddress) {
-        require(Compat._supportsProfileV1(latestAddress), 'unsupported contract address');
+        require(Compat.supportsProfileV1(latestAddress), 'unsupported contract address');
         require(Signature.verifyContract(IProfileV1(latestAddress)), 'signature verification failed');
         profileAddress = IProfileV1(latestAddress).profileAddress();
 

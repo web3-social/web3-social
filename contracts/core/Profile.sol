@@ -35,7 +35,7 @@ abstract contract Profile is IProfileV1, ERC165, Ownable {
     }
 
     modifier onlyFromProfile() {
-        require(Compat._supportsProfileV1(msg.sender), 'unsupported contract');
+        require(Compat.supportsProfileV1(msg.sender), 'unsupported contract');
         require(Signature.verifyContract(IProfileV1(msg.sender)), 'unable to verify contract');
         _;
     }
@@ -231,10 +231,18 @@ abstract contract Profile is IProfileV1, ERC165, Ownable {
     }
 
     /**
+     * @dev assign resolver
+     */
+    function setResolver(address resolver) public onlyOwner notMoved {
+        require(Compat.supportsResolver(resolver), 'unsupported contract');
+        _resolver = IResolver(resolver);
+    }
+
+    /**
      * @dev migerate contract
      */
     function moveContract(address newContract) public onlyOwner notMoved {
-        require(Compat._supportsProfileV1(newContract), 'unsupported contract');
+        require(Compat.supportsProfileV1(newContract), 'unsupported contract');
         IProfileV1 profile = IProfileV1(newContract);
         require(Signature.verifyContract(profile), 'unable to verify contract');
         require(_profileAddress == profile.profileAddress(), 'not same profile');
