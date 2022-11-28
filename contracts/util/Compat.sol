@@ -31,7 +31,7 @@ library Compat {
                 if (!_supportsProfileV1(newAddress)) {
                     return (GetContractError.UnsupportedInterface, address(0));
                 }
-                if (!Signature.verify(IProfileV1(newAddress))) {
+                if (!Signature.verifyContract(IProfileV1(newAddress))) {
                     return (GetContractError.InvalidSignature, address(0));
                 }
                 contractAddress = newAddress;

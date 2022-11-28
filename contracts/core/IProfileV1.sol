@@ -18,13 +18,40 @@ interface IProfileV1 is IERC165 {
     /**
      * @dev emit when you got a new follower
      */
-    event NewFollowerEvent(address indexed _followingProfile, address _currentContract);
+    event NewFollowerEvent(address indexed _followerProfile, address _currentContract);
     /**
      * @dev emit when others rejected your follow request
      */
     event FollowingRejectedEvent(address indexed _followingProfile, address _currentContract);
-    event UnFollowEvent();
-    event PostEvent(uint256 index, string content);
+    /**
+     * @dev emit when you unfollow someone
+     */
+    event UnFollowEvent(address indexed _followingProfile, address _currentContract);
+    /**
+     * @dev emit when you post/repost
+     * signature is correspond to
+     * `personal_sign(abi.encode(profile, nonce, sourceProfile, sourceNonce, keccak256(abi.encodePacked(content)))`
+     */
+    event PostEvent(
+        uint256 indexed nonce,
+        address indexed sourceProfile,
+        uint256 indexed sourceNonce,
+        string content,
+        bytes sourceSignature,
+        bytes signature
+    );
+    /**
+     * @dev emit when others reply you
+     * signature is correspond to
+     * `personal_sign(abi.encode(_thisProfile_, postNonce, sourceProfile, replyNonce, keccak256(abi.encodePacked(content)))`
+     */
+    event ReplyEvent(
+        uint256 indexed postNonce,
+        uint256 indexed replyNonce,
+        address indexed sourceProfile,
+        string content,
+        bytes signature
+    );
 
     enum FollowRequestResult {
         Pending,
@@ -80,5 +107,15 @@ interface IProfileV1 is IERC165 {
     /**
      * @dev others will call this to reply to a posted message.
      */
-    function replyTo(uint256 index, string calldata content) external;
+    function replyTo(uint256 nonce, string calldata content, bytes calldata replySignature) external;
+
+    /**
+     * @dev get next nonce
+     */
+    function getNonce() external view returns (uint256);
+
+    /**
+     * @dev get next nonce of a post
+     */
+    function getReplyNonce(uint256 postNonce) external view returns (uint256);
 }

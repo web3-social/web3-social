@@ -41,7 +41,7 @@ contract Resolver is IResolver, ERC165 {
 
     function _verifyAll(address latestAddress) private view returns (address profileAddress) {
         require(Compat._supportsProfileV1(latestAddress), 'unsupported contract address');
-        require(Signature.verify(IProfileV1(latestAddress)), 'signature verification failed');
+        require(Signature.verifyContract(IProfileV1(latestAddress)), 'signature verification failed');
         profileAddress = IProfileV1(latestAddress).profileAddress();
 
         // recursive check if there is a history record
