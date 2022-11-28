@@ -1,25 +1,53 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import '@openzeppelin/contracts/utils/introspection/IERC165.sol';
 
 /**
  * Interface of the ProfileV1 standard of web3-social protocol.
  */
 interface IProfileV1 is IERC165 {
-
-    event FollowEvent();
+    /**
+     * @dev emit when you got a new follow reqeust
+     */
+    event PendingFollowEvent(address indexed _fromProfile, address _currentContract);
+    /**
+     * @dev emit when you are following a new Profile
+     */
+    event NewFollowingEvent(address indexed _followingProfile, address _currentContract);
+    /**
+     * @dev emit when you got a new follower
+     */
+    event NewFollowerEvent(address indexed _followingProfile, address _currentContract);
+    /**
+     * @dev emit when others rejected your follow request
+     */
+    event FollowingRejectedEvent(address indexed _followingProfile, address _currentContract);
     event UnFollowEvent();
     event PostEvent(uint256 index, string content);
 
-    enum FollowRequestResult { Approved, Pending, Rejected }
+    enum FollowRequestResult {
+        Pending,
+        Approved,
+        Rejected
+    }
+    enum FollowResponse {
+        Approved,
+        Rejected
+    }
+
+    /**
+     * @dev check if a profile is moved to a new contract
+     * @return address 0x0 if not moved, otherwise is the new contract address
+     */
+    function rootContractAddress() external view returns (address);
 
     /**
      * @dev check if a profile is moved to a new contract
      * @return address 0x0 if not moved, otherwise is the new contract address
      */
     function newContractAddress() external view returns (address);
-   
+
     /**
      * @dev this is represents the profile identity
      * @return address the canonical profile address.
@@ -42,7 +70,12 @@ interface IProfileV1 is IERC165 {
     /**
      * @dev this is a "callback" of "followRequest" when it returns `Pending`.
      */
-    function followResponse(FollowRequestResult result) external payable;
+    function followResponse(FollowResponse response) external payable;
+
+    /**
+     * @dev unfollow callback
+     */
+    function unfollowNotification() external;
 
     /**
      * @dev others will call this to reply to a posted message.
