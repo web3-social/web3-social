@@ -197,6 +197,9 @@ abstract contract Profile is IProfileV1, ERC165, Ownable {
         emit UnFollowEvent(_profile, address(_contract));
     }
 
+    /**
+     * @dev make post
+     */
     function post(string calldata content, bytes calldata postSignature) public onlyOwner notMoved {
         uint256 nonce = _nonce.current();
 
@@ -207,6 +210,9 @@ abstract contract Profile is IProfileV1, ERC165, Ownable {
         _nonce.increment();
     }
 
+    /**
+     * @dev make repost
+     */
     function repost(
         address sourceProfile,
         uint256 sourceNonce,
@@ -224,6 +230,20 @@ abstract contract Profile is IProfileV1, ERC165, Ownable {
         _nonce.increment();
     }
 
+    /**
+     * @dev migerate contract
+     */
+    function moveContract(address newContract) public onlyOwner notMoved {
+        require(Compat._supportsProfileV1(newContract), 'unsupported contract');
+        IProfileV1 profile = IProfileV1(newContract);
+        require(Signature.verifyContract(profile), 'unable to verify contract');
+        require(_profileAddress == profile.profileAddress(), 'not same profile');
+        _moved = newContract;
+    }
+
+    /**
+     * @dev extract balance
+     */
     function transfer(address payable _target, uint256 amount) public onlyOwner {
         _target.transfer(amount);
     }
