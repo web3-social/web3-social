@@ -179,6 +179,24 @@ abstract contract Profile is IProfileV1, ERC165, Ownable {
     }
 
     /**
+     * @dev follow
+     */
+    function follow(address _profile) public onlyOwner notMoved {
+        IProfileV1 _contract = IProfileV1(_resolveProfile(_profile));
+        FollowRequestResult result = _contract.followRequest();
+        if (result == FollowRequestResult.Approved) {
+            _following.add(_profile);
+            emit NewFollowingEvent(_profile, address(_contract));
+        } else if (result == FollowRequestResult.Rejected) {
+            emit FollowingRejectedEvent(_profile, address(_contract));
+        } else if (result == FollowRequestResult.Pending) {
+            _sentFollowRequests[_profile] = true;
+        } else {
+            revert('Profile: unreachable');
+        }
+    }
+
+    /**
      * @dev unfollow and notify
      */
     function unfollow(address _profile) public onlyOwner notMoved {
