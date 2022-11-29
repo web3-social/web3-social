@@ -140,7 +140,7 @@ abstract contract Profile is IProfileV1, ERC165, Ownable {
 
         require(Signature.verifyReply(_profileAddress, nonce, _profile, replyNonce, content, replySignature));
 
-        emit ReplyEvent(nonce, replyNonce, _profile, content, replySignature);
+        emit ReplyEvent(_profileAddress, nonce, _profile, replyNonce, content, replySignature);
 
         counter.increment();
     }
@@ -246,6 +246,21 @@ abstract contract Profile is IProfileV1, ERC165, Ownable {
 
         emit PostEvent(nonce, sourceProfile, sourceNonce, content, sourceSignature, postSignature);
         _nonce.increment();
+    }
+
+    /**
+     * @dev reply post
+     */
+    function reply(
+        address postProfile,
+        uint256 postNonce,
+        uint256 replyNonce,
+        string calldata content,
+        bytes calldata replySignature
+    ) public onlyOwner notMoved {
+        IProfileV1 _contract = IProfileV1(_resolveProfile(postProfile));
+        _contract.replyTo(postNonce, content, replySignature);
+        emit ReplyEvent(postProfile, postNonce, _profileAddress, replyNonce, content, replySignature);
     }
 
     /**

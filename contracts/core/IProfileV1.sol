@@ -43,14 +43,15 @@ interface IProfileV1 is IERC165 {
     /**
      * @dev emit when others reply you
      * signature is correspond to
-     * `personal_sign(abi.encode(_thisProfile_, postNonce, sourceProfile, replyNonce, keccak256(abi.encodePacked(content)))`
+     * `personal_sign(abi.encode(postProfile, postNonce, sourceProfile, replyNonce, keccak256(abi.encodePacked(content)))`
      */
     event ReplyEvent(
+        address indexed postProfile,
         uint256 indexed postNonce,
-        uint256 indexed replyNonce,
         address indexed sourceProfile,
+        uint256 replyNonce,
         string content,
-        bytes signature
+        bytes replySignature
     );
 
     enum FollowRequestResult {
