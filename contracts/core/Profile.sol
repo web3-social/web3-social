@@ -239,6 +239,18 @@ abstract contract Profile is IProfileV1, ERC165, Ownable {
     }
 
     /**
+     * @dev set signature
+     */
+    function setSignature(bytes memory __signature) public onlyOwner {
+        require(_signature.length == 0, 'signature already set');
+        _signature = __signature;
+        Signature.verifyContract(this);
+        if (address(_resolver) != address(0)) {
+            _resolver.update(address(this));
+        }
+    }
+
+    /**
      * @dev migerate contract
      */
     function moveContract(address newContract) public onlyOwner notMoved {
