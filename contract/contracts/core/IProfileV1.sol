@@ -83,7 +83,7 @@ interface IProfileV1 is IERC165 {
     function profileAddress() external view returns (address);
 
     /**
-     * @dev the signature of `0x{profileAddress:x}:0x{contractAddress:x}` using profile key
+     * @dev the personal_sign of `abi.encodePacked(contractAddress, profileAddress)` using profile key
      * @return signature signature of this profile.
      */
     function signature() external view returns (bytes memory);
