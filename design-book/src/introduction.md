@@ -4,7 +4,7 @@
 
 This project is aimed for web3 social protocol standard.
 
-## Q&A
+## Quick Q&A
 
 1. Why build social network with web3 and Ethereum?
 
